@@ -39,7 +39,7 @@ export class PostService {
         const posts = data.map((post) => {
             return PostEntity.fromObject(post)
         })
-
+        
         return {posts, total}
     }
 }
