@@ -6,20 +6,22 @@ export class CommentEntity {
     public readonly content: string,
     public readonly image: string | null,
     public readonly postId: number,
+    public readonly authorId: number,
     public readonly createdAt: Date
   ) {}
 
   static fromObject(object: { [key: string]: any }) {
-    const { id, content, image, postId, createdAt} = object;
+    const { id, content, image, postId, createdAt, authorId} = object;
 
     if (!id) throw CustomError.badRequest("Missing id");
     if (!content) throw CustomError.badRequest("Missing content");
     if (!postId) throw CustomError.badRequest("Missing postId");
+    if (!authorId) throw CustomError.badRequest("Missing AuthorId");
     let base64Image: string | null = null;
     if (image) {
-      base64Image = `data:image/jpeg;base64,${image.toString("base64")}`;
+      base64Image = `data:image/jpeg;base64,${Buffer.from(image).toString("base64")}`;
     }
 
-    return new CommentEntity(id, content, image ?? null, postId, createdAt);
+    return new CommentEntity(id, content, base64Image ?? null, postId, authorId, createdAt);
   }
 }

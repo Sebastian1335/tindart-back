@@ -20,6 +20,9 @@ export class PostRoutes {
     // Definir las rutas
     router.post('/post', [AuthMiddleware.validateJWT, FileUploadMiddleware.containFiles],postController.uploadPost);
     router.get('/', [AuthMiddleware.validateJWT],postController.getFeedPost)
+    router.get('/post/:id/details', [AuthMiddleware.validateJWT],postController.getPostDetails)
+    router.post('/post/:id/comment', [AuthMiddleware.validateJWT, FileUploadMiddleware.optionalFiles], postController.uploadComment)
+
     return router;
   }
 

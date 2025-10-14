@@ -1,6 +1,9 @@
 import { prisma } from "../../data/postgres";
+import { CreateCommentDto } from "../../domain/dto/comment/create-comment.dto";
 import { CreatePostDto } from "../../domain/dto/post/create-post.dto";
-import { PostEntity } from "../../domain/entities/post.entity";
+import { CommentEntity } from "../../domain/entities/comment.entity";
+import { PostEntity } from '../../domain/entities/post.entity';
+import { UserEntity } from "../../domain/entities/user.entitys";
 import { CustomError } from "../../domain/errors/custom.error";
 
 export class PostService {
@@ -40,5 +43,57 @@ export class PostService {
         })
         
         return {posts, total}
+    }
+
+    public getPostDetails = async (postId: number): Promise<{user: Partial<UserEntity>, comments: CommentEntity[]}> => {
+        const post = await prisma.post.findUnique({
+            where: {
+                id: postId
+            },
+            select: {
+                author: {
+                    select: {
+                        userName: true,
+                        _count: {
+                            select: {
+                                followers: true
+                            }
+                        }
+                    }
+                },
+                comments: {
+                    select: {
+                        content: true,
+                        id: true,
+                        image: true,
+                        postId: true,
+                        createdAt: true,
+                        authorId: true
+                    }
+                }
+            }
+        })
+
+        if (post === null) throw new CustomError(400, `post con id ${postId} no existe`)
+
+
+        const comments = post.comments.map((com) => {
+            return CommentEntity.fromObject(com)
+        }) 
+
+
+        return {user: post.author, comments: comments}
+    }
+
+    public createComment = async (dto: CreateCommentDto): Promise<CommentEntity> => {
+        const comment = await prisma.comment.create({
+            data: {
+                content: dto.content,
+                authorId: dto.authorId,
+                postId: dto.postId,
+                image: !!dto.image ? dto.image : null 
+            }
+        })
+        return CommentEntity.fromObject(comment)
     }
 }

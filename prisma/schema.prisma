@@ -23,6 +23,7 @@ model User {
   createdAt DateTime @default(now())
   
   post Post[]
+  comment Comment[]
   following Follows[] @relation("SeguidorRelation")
   followers Follows[] @relation("SeguidoRelation")
 
@@ -54,7 +55,9 @@ model Comment {
   image Bytes?
   postId Int
   createdAt DateTime @default(now())
-
+  authorId Int
+  
   post Post @relation(fields: [postId], references: [id])
+  author User @relation(fields: [authorId], references: [id])
 }
 
