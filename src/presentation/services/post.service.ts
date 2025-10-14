@@ -16,7 +16,6 @@ export class PostService {
                     tags: postDto.tags
                 }
             })
-
             const response = PostEntity.fromObject(post)
             return response
         } catch (error) {

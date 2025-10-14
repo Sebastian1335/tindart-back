@@ -19,7 +19,7 @@ export class UserEntity {
     if (!userName) throw CustomError.badRequest("Missing userName");
     if (!email) throw CustomError.badRequest("Missing email");
     if (!password) throw CustomError.badRequest("Missing password");
-
+    
     return new UserEntity(id, userName, email, password, createdAt, post, following, followers);
   }
 }

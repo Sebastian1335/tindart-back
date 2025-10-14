@@ -4,7 +4,7 @@ export class PostEntity {
   constructor(
     public readonly id: number,
     public readonly title: string,
-    public readonly image: Buffer,
+    public readonly image: string,
     public readonly description: string,
     public readonly tags: string[],
     public readonly authorId: number,
@@ -19,7 +19,12 @@ export class PostEntity {
     if (!description) throw CustomError.badRequest("Missing description");
     if (!Array.isArray(tags)) throw CustomError.badRequest("Missing or invalid tags");
     if (!authorId) throw CustomError.badRequest("Missing authorId");
+    
+    let base64Image: string | null = null;
+    if (image) {
+      base64Image = `data:image/jpeg;base64,${Buffer.from(image).toString("base64")}`;
+    }
 
-    return new PostEntity(id, title, image, description, tags, authorId, createdAt);
+    return new PostEntity(id, title, base64Image!, description, tags, authorId, createdAt);
   }
 }

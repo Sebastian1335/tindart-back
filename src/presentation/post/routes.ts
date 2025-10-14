@@ -3,6 +3,8 @@ import { envs } from "../../config/envs";
 import { EmailService } from "../services/email.service";
 import { PostController } from "./controller";
 import { PostService } from "../services/post.service";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
+import { FileUploadMiddleware } from "../middlewares/file-upload.middleware";
 
 
 
@@ -16,8 +18,8 @@ export class PostRoutes {
     const postService = new PostService()
     const postController = new PostController(postService)
     // Definir las rutas
-    router.post('/post', postController.uploadPost);
-    router.get('/', postController.getFeedPost)
+    router.post('/post', [AuthMiddleware.validateJWT, FileUploadMiddleware.containFiles],postController.uploadPost);
+    router.get('/', [AuthMiddleware.validateJWT],postController.getFeedPost)
     return router;
   }
 
