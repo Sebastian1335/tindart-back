@@ -1,0 +1,25 @@
+import { Router } from "express";
+import { envs } from "../../config/envs";
+import { EmailService } from "../services/email.service";
+import { PostController } from "./controller";
+import { PostService } from "../services/post.service";
+
+
+
+
+export class PostRoutes {
+
+
+  static get routes(): Router {
+
+    const router = Router();
+    const postService = new PostService()
+    const postController = new PostController(postService)
+    // Definir las rutas
+    router.post('/post', postController.uploadPost);
+    router.get('/', postController.getFeedPost)
+    return router;
+  }
+
+
+}

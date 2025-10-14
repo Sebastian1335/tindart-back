@@ -2,9 +2,9 @@ import { CustomError } from "../errors/custom.error";
 
 export class FollowsEntity {
   constructor(
-    public id: number,
-    public idSeguidor: number,
-    public idSeguido: number,
+    public readonly id: number,
+    public readonly idSeguidor: number,
+    public readonly idSeguido: number,
   ) {}
 
   static fromObject(object: { [key: string]: any }) {

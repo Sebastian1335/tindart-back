@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Comment" ALTER COLUMN "image" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "image" SET DATA TYPE TEXT;
