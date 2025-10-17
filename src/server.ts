@@ -1,5 +1,6 @@
 import express, { Router } from 'express'
 import fileUpload from 'express-fileupload'  
+import cors from "cors"
 
 interface Options {
     port: number,
@@ -18,7 +19,12 @@ export class Server{
         this.routes = routes
     }
     async start() {
-
+        this.app.use(
+            cors({
+                origin: "http://localhost:5173", // tu frontend
+                credentials: true, // si usas cookies o autenticación
+            })
+        )
         //* Middlewares
         this.app.use(express.json())
         this.app.use( express.urlencoded({ extended: true }) ); 
