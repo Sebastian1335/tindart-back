@@ -16,9 +16,9 @@ export class PostService {
                     description: postDto.description,
                     authorId: postDto.authorId,
                     image: postDto.image,
-                    tags: postDto.tags
-                }
-            })
+                    mimeType: postDto.imageMimeType,
+                    tags: postDto.tags,
+                }})
             const response = PostEntity.fromObject(post)
             return response
         } catch (error) {
@@ -33,7 +33,7 @@ export class PostService {
             prisma.post.findMany({
                 skip,
                 take: limit,
-                orderBy: {createdAt: 'desc'}
+                orderBy: {createdAt: 'desc'},
             }),
             prisma.post.count()
         ])
@@ -91,9 +91,29 @@ export class PostService {
                 content: dto.content,
                 authorId: dto.authorId,
                 postId: dto.postId,
-                image: !!dto.image ? dto.image : null 
+                image: !!dto.image ? dto.image : null,
+                mimeType: !!dto.imageMimeType ? dto.imageMimeType : null 
             }
         })
         return CommentEntity.fromObject(comment)
+    }
+
+    public getImage = async (postId: number) => {
+        try {
+            const img = await prisma.post.findUnique({
+                where: {
+                    id: postId
+                },
+                select: {
+                    image: true,
+                    mimeType: true
+                }
+            })
+            if (!img) throw new CustomError(400, "no se encontro imagen")
+
+            return img
+        } catch (error) {
+            throw new CustomError(500, "error del servidor") 
+        }
     }
 }

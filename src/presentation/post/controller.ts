@@ -21,7 +21,6 @@ export class PostController {
 
     uploadPost = async (req: Request, res: Response) => {
         try {
-            // 👇 usamos el middleware anterior, que deja el archivo en req.files
             const fileArray = req.body.files;
             if (fileArray.length === 0)
                 return res
@@ -29,6 +28,7 @@ export class PostController {
                     .json({ error: "No se subió ninguna imagen" });
             const uploadedFile = fileArray[0];
             const buffer = Buffer.from(uploadedFile!.data);
+            const mimeType = uploadedFile.mimetype;
 
             const { title, description, tags } = req.body;
             const user = (req as any).user; // o req.user si lo defines globalmente
@@ -40,12 +40,12 @@ export class PostController {
                 title,
                 description,
                 image: buffer,
+                imageMimeType: mimeType,
                 tags: parsedTags,
                 authorId: user.id,
             });
 
             if (error) return this.handleError(error, res);
-
             this.postService
                 .uploadPost(dto!)
                 .then((response) => res.status(201).json(response))
@@ -120,4 +120,18 @@ export class PostController {
             this.handleError(error, res);
         }
     };
+
+    getImage = async (req: Request, res: Response) => {
+        const id = req.params.id
+        if (id === undefined) return this.handleError("id no existente", res);
+        if (isNaN(+id!)) return this.handleError("id no es un numero", res);
+
+        this.postService
+            .getImage(+id)
+            .then((img) => {
+                res.set("Content-Type", img.mimeType)
+                res.send(img.image)
+            })
+            .catch((err) => this.handleError(err, res))
+    }
 }

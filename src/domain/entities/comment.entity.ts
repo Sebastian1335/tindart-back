@@ -1,3 +1,4 @@
+import { envs } from "../../config/envs";
 import { CustomError } from "../errors/custom.error";
 
 export class CommentEntity {
@@ -19,7 +20,7 @@ export class CommentEntity {
     if (!authorId) throw CustomError.badRequest("Missing AuthorId");
     let base64Image: string | null = null;
     if (image) {
-      base64Image = `data:image/jpeg;base64,${Buffer.from(image).toString("base64")}`;
+      base64Image = `${envs.WEBSERVICE_URL}/feed/post/${id}/image`;
     }
 
     return new CommentEntity(id, content, base64Image ?? null, postId, authorId, createdAt);

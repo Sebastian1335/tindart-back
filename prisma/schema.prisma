@@ -13,51 +13,65 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-
 model User {
-  id Int @id @default(autoincrement())
-  userName String
-  email String @unique()
-  emailValidated Boolean @default(false)
-  password String
-  createdAt DateTime @default(now())
-  
-  post Post[]
-  comment Comment[]
+  id             Int      @id @default(autoincrement())
+  userName       String
+  email          String   @unique()
+  emailValidated Boolean  @default(false)
+  password       String
+  createdAt      DateTime @default(now())
+  description    String?
+
+  post      Post[]
+  comment   Comment[]
   following Follows[] @relation("SeguidorRelation")
   followers Follows[] @relation("SeguidoRelation")
-
+  profilePictures profilePictures?
 }
 
+model profilePictures {
+  id             Int      @id @default(autoincrement())
+  profilePicture Bytes?
+  profileMimeType String? // 👈 tipo MIME (image/png, image/jpeg, etc.)
+  wallPicture    Bytes?
+  wallMimeType   String? // 👈 tipo MIME para la imagen de muro
+  userId         Int      @unique()
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+
+
 model Follows {
-  id Int @id @default(autoincrement())
+  id         Int  @id @default(autoincrement())
   idSeguidor Int
-  idSeguido Int
-  Seguidor User @relation("SeguidorRelation", fields: [idSeguidor], references: [id])
-  Seguido  User @relation("SeguidoRelation", fields: [idSeguido], references: [id])
+  idSeguido  Int
+  Seguidor   User @relation("SeguidorRelation", fields: [idSeguidor], references: [id])
+  Seguido    User @relation("SeguidoRelation", fields: [idSeguido], references: [id])
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-  title String
-  image Bytes
+  id          Int       @id @default(autoincrement())
+  title       String
+  image       Bytes
+  mimeType    String
   description String
-  tags String[]
-  authorId Int
-  author User @relation(fields: [authorId], references: [id])
-  comments Comment[]
-  createdAt DateTime @default(now())
+  tags        String[]
+  authorId    Int
+  author      User      @relation(fields: [authorId], references: [id])
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
 }
 
 model Comment {
-  id Int @id @default(autoincrement())
-  content String
-  image Bytes?
-  postId Int
+  id        Int      @id @default(autoincrement())
+  content   String
+  image     Bytes?
+  mimeType   String?
+  postId    Int
   createdAt DateTime @default(now())
-  authorId Int
-  
-  post Post @relation(fields: [postId], references: [id])
+  authorId  Int
+
+  post   Post @relation(fields: [postId], references: [id])
   author User @relation(fields: [authorId], references: [id])
 }
-
