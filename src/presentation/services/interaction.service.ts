@@ -103,4 +103,39 @@ export class InteractionService {
             };
         }
     };
+
+    public toggleLikeComment = async (userId: number, commentId: number) => {
+        const likeExist = await prisma.likeComment.findUnique({
+            where: {
+                userId_commentId: {
+                    userId,
+                    commentId
+                }
+            },
+        });
+        if (!likeExist) {
+            await prisma.likeComment.create({
+                data: {
+                    commentId,
+                    userId,
+                },
+            });
+
+            return {
+                response: `el usuario ${userId} dio like al comentario ${commentId}`,
+            };
+        } else {
+            await prisma.likeComment.delete({
+                where: {
+                    userId_commentId: {
+                        commentId,
+                        userId,
+                    },
+                },
+            });
+            return {
+                response: `el usuario ${userId} quito el like al comentario ${commentId}`,
+            };
+        }
+    }
 }

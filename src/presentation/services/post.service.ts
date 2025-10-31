@@ -85,7 +85,18 @@ export class PostService {
                         image: true,
                         postId: true,
                         createdAt: true,
-                        authorId: true
+                        authorId: true,
+                        _count: {
+                            select: {
+                                LikeComment: true
+                            }
+                        },
+                        LikeComment: {
+                            where: {
+                                userId
+                            },
+                            select: {id: true}
+                        }
                     }
                 },
                 _count: {
@@ -108,7 +119,6 @@ export class PostService {
                 }
             }
         })
-
         if (post === null) throw new CustomError(400, `post con id ${postId} no existe`)
 
 

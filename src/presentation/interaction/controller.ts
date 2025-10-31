@@ -45,4 +45,14 @@ export class InteractionController {
             .then((r) => res.status(201).json(r))
             .catch((e) => this.handleError(e, res))
     };
+    toggleLikeComment = async (req: Request, res: Response) => {
+        const user = (req as any).user;
+        const commentId = req.params.commentId;
+        if (!commentId) return this.handleError("PostId undefined", res);
+        if (isNaN(+commentId))
+            return this.handleError("PostId no es un número", res);
+        this.service.toggleLikeComment(user.id, +commentId)
+            .then((r) => res.status(201).json(r))
+            .catch((e) => this.handleError(e, res))
+    }
 }
