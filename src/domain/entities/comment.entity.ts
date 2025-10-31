@@ -8,16 +8,18 @@ export class CommentEntity {
     public readonly image: string | null,
     public readonly postId: number,
     public readonly authorId: number,
+    public readonly authorName: string,
     public readonly createdAt: Date,
     public readonly countlikes?: number,
     public readonly liked?: boolean
   ) {}
 
   static fromObject(object: { [key: string]: any }) {
-    const { id, content, image, postId, createdAt, authorId, _count = {LikeComment: 0}, LikeComment = false} = object;
+    const { id, content, image, postId, createdAt, authorId, author,_count = {LikeComment: 0}, LikeComment = false} = object;
 
     if (!id) throw CustomError.badRequest("Missing id");
     if (!content) throw CustomError.badRequest("Missing content");
+    if (!author) throw CustomError.badRequest("Missing content");
     if (!postId) throw CustomError.badRequest("Missing postId");
     if (!authorId) throw CustomError.badRequest("Missing AuthorId");
     let base64Image: string | null = null;
@@ -25,6 +27,6 @@ export class CommentEntity {
       base64Image = `${envs.WEBSERVICE_URL}/feed/post/${id}/image`;
     }
 
-    return new CommentEntity(id, content, base64Image ?? null, postId, authorId, createdAt, _count.LikeComment, !!LikeComment[0]);
+    return new CommentEntity(id, content, base64Image ?? null, postId, authorId, author.userName, createdAt,_count.LikeComment, !!LikeComment[0]);
   }
 }

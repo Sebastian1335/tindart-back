@@ -86,6 +86,11 @@ export class PostService {
                         postId: true,
                         createdAt: true,
                         authorId: true,
+                        author: {
+                            select: {
+                                userName: true
+                            }
+                        },
                         _count: {
                             select: {
                                 LikeComment: true
@@ -143,6 +148,13 @@ export class PostService {
                 postId: dto.postId,
                 image: !!dto.image ? dto.image : null,
                 mimeType: !!dto.imageMimeType ? dto.imageMimeType : null 
+            },
+            include: {
+                author: {
+                    select: {
+                        userName: true
+                    }
+                }
             }
         })
         return CommentEntity.fromObject(comment)
