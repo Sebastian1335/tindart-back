@@ -80,10 +80,11 @@ export class PostController {
 
     getPostDetails = async (req: Request, res: Response) => {
         const postId = req.params.id;
+        const user = (req as any).user;
         if (postId === undefined || isNaN(+postId))
             this.handleError("id invalido", res);
         this.postService
-            .getPostDetails(+postId!)
+            .getPostDetails(+postId!, user.id)
             .then((response) => res.status(201).json(response))
             .catch((error) => this.handleError(error, res));
     };

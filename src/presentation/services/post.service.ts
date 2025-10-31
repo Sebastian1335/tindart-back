@@ -6,6 +6,23 @@ import { PostEntity } from '../../domain/entities/post.entity';
 import { UserEntity } from "../../domain/entities/user.entitys";
 import { CustomError } from "../../domain/errors/custom.error";
 
+
+
+interface PostDetails {
+    likedByUser:  boolean;
+    savedByUser:  boolean;
+    sharedByUser: boolean;
+    count:        Count;
+}
+
+interface Count {
+    LikePost:  number;
+    SavePost:  number;
+    SharePost: number;
+}
+
+
+
 export class PostService {
 
     public uploadPost = async(postDto: CreatePostDto): Promise<PostEntity> => {
@@ -45,7 +62,7 @@ export class PostService {
         return {posts, total}
     }
 
-    public getPostDetails = async (postId: number): Promise<{user: Partial<UserEntity>, comments: CommentEntity[]}> => {
+    public getPostDetails = async (postId: number, userId: number): Promise<{user: Partial<UserEntity>, comments: CommentEntity[], postDetails: PostDetails}> => {
         const post = await prisma.post.findUnique({
             where: {
                 id: postId
@@ -58,7 +75,7 @@ export class PostService {
                             select: {
                                 followers: true
                             }
-                        }
+                        },
                     }
                 },
                 comments: {
@@ -70,6 +87,24 @@ export class PostService {
                         createdAt: true,
                         authorId: true
                     }
+                },
+                _count: {
+                    select: {
+                        LikePost: true,
+                        SavePost: true,
+                        SharePost: true
+                    }},
+                LikePost: {
+                    where: {userId: userId},
+                    select: {id: true}
+                },
+                SavePost: {
+                    where: {userId},
+                    select: {id: true}
+                },
+                SharePost: {
+                    where: {userId},
+                    select: {id: true}
                 }
             }
         })
@@ -80,9 +115,14 @@ export class PostService {
         const comments = post.comments.map((com) => {
             return CommentEntity.fromObject(com)
         }) 
+        const postDetails = {
+            likedByUser: post.LikePost.length > 0,
+            savedByUser: post.SavePost.length > 0,
+            sharedByUser: post.SharePost.length > 0,
+            count: post._count
+        }
 
-
-        return {user: post.author, comments: comments}
+        return {user: post.author, comments: comments, postDetails}
     }
 
     public createComment = async (dto: CreateCommentDto): Promise<CommentEntity> => {

@@ -22,25 +22,27 @@ model User {
   createdAt      DateTime @default(now())
   description    String?
 
-  post      Post[]
-  comment   Comment[]
-  following Follows[] @relation("SeguidorRelation")
-  followers Follows[] @relation("SeguidoRelation")
+  post            Post[]
+  comment         Comment[]
+  following       Follows[]        @relation("SeguidorRelation")
+  followers       Follows[]        @relation("SeguidoRelation")
   profilePictures profilePictures?
+  LikePost        LikePost[]
+  LikeComment     LikeComment[]
+  SavePost        SavePost[]
+  SharePost       SharePost[]
 }
 
 model profilePictures {
-  id             Int      @id @default(autoincrement())
-  profilePicture Bytes?
-  profileMimeType String? // 👈 tipo MIME (image/png, image/jpeg, etc.)
-  wallPicture    Bytes?
-  wallMimeType   String? // 👈 tipo MIME para la imagen de muro
-  userId         Int      @unique()
+  id              Int     @id @default(autoincrement())
+  profilePicture  Bytes?
+  profileMimeType String?
+  wallPicture     Bytes?
+  wallMimeType    String?
+  userId          Int     @unique()
 
   user User @relation(fields: [userId], references: [id])
 }
-
-
 
 model Follows {
   id         Int  @id @default(autoincrement())
@@ -51,27 +53,78 @@ model Follows {
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   image       Bytes
   mimeType    String
   description String
   tags        String[]
   authorId    Int
-  author      User      @relation(fields: [authorId], references: [id])
-  comments    Comment[]
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
+
+  comments  Comment[]
+  author    User        @relation(fields: [authorId], references: [id])
+  LikePost  LikePost[]
+  SavePost  SavePost[]
+  SharePost SharePost[]
+}
+
+model LikePost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model SavePost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model SharePost {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  @@unique([userId, postId])
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   image     Bytes?
-  mimeType   String?
+  mimeType  String?
   postId    Int
   createdAt DateTime @default(now())
   authorId  Int
 
   post   Post @relation(fields: [postId], references: [id])
   author User @relation(fields: [authorId], references: [id])
+
+  LikeComment LikeComment[]
+}
+
+model LikeComment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  comment Comment @relation(fields: [commentId], references: [id])
+
+  @@unique([userId, commentId])
 }
