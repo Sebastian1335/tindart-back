@@ -2,6 +2,7 @@ import {  Router } from "express";
 import { AuthRoutes } from "./presentation/auth/routes";
 import { PostRoutes } from "./presentation/post/routes";
 import { InteractionRoutes } from './presentation/interaction/routes';
+import { WhiteboardRoutes } from "./presentation/whiteboard/routes";
 
 
 export class AppRoutes {
@@ -14,6 +15,7 @@ export class AppRoutes {
         router.use(`${apiPrefix}/auth`, AuthRoutes.routes)
         router.use(`${apiPrefix}/feed`, PostRoutes.routes)
         router.use(`${apiPrefix}/interaction`, InteractionRoutes.routes)
+        router.use(`${apiPrefix}/whiteboard`, WhiteboardRoutes.routes)
         return router;
     }
 }

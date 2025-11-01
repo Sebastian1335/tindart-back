@@ -31,6 +31,8 @@ model User {
   LikeComment     LikeComment[]
   SavePost        SavePost[]
   SharePost       SharePost[]
+
+  WhiteBoard WhiteBoard[]
 }
 
 model profilePictures {
@@ -127,4 +129,17 @@ model LikeComment {
   comment Comment @relation(fields: [commentId], references: [id])
 
   @@unique([userId, commentId])
+}
+
+
+model WhiteBoard {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  snapshot Json?
+  ownerId Int
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
