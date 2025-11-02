@@ -52,6 +52,8 @@ model Follows {
   idSeguido  Int
   Seguidor   User @relation("SeguidorRelation", fields: [idSeguidor], references: [id])
   Seguido    User @relation("SeguidoRelation", fields: [idSeguido], references: [id])
+
+  @@unique([idSeguidor, idSeguido])
 }
 
 model Post {

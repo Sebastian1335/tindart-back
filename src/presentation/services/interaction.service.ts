@@ -1,4 +1,5 @@
 import { prisma } from "../../data/postgres";
+import { CustomError } from "../../domain/errors/custom.error";
 
 export class InteractionService {
     public toggleLikePost = async (userId: number, postId: number) => {
@@ -109,8 +110,8 @@ export class InteractionService {
             where: {
                 userId_commentId: {
                     userId,
-                    commentId
-                }
+                    commentId,
+                },
             },
         });
         if (!likeExist) {
@@ -137,5 +138,54 @@ export class InteractionService {
                 response: `el usuario ${userId} quito el like al comentario ${commentId}`,
             };
         }
-    }
+    };
+
+    public toggleFollowUser = async (idSeguidor: number, idSeguido: number) => {
+        const idSeguidoExist = await prisma.user.findUnique({
+            where: {
+                id: idSeguido,
+            },
+        });
+
+        if (!idSeguidoExist)
+            throw CustomError.internalServer(
+                "El usuario que quieres seguir no existe"
+            );
+
+        try {
+            const followExist = await prisma.follows.findUnique({
+                where: {
+                    idSeguidor_idSeguido: {
+                        idSeguido,
+                        idSeguidor,
+                    },
+                },
+            });
+            if (!followExist) {
+                const res = await prisma.follows.create({
+                    data: {
+                        idSeguido,
+                        idSeguidor,
+                    },
+                });
+                return {
+                    response: `el usuario ${idSeguidor} siguio al usuario ${idSeguido}`,
+                };
+            } else {
+                const res = await prisma.follows.delete({
+                    where: {
+                        idSeguidor_idSeguido: {
+                            idSeguido,
+                            idSeguidor,
+                        },
+                    },
+                });
+                return {
+                    response: `el usuario ${idSeguidor} dejó de seguir al usuario ${idSeguido}`,
+                };
+            }
+        } catch (error) {
+            throw CustomError.internalServer("Error al seguir a un usuario");
+        }
+    };
 }

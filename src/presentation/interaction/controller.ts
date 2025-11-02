@@ -48,10 +48,23 @@ export class InteractionController {
     toggleLikeComment = async (req: Request, res: Response) => {
         const user = (req as any).user;
         const commentId = req.params.commentId;
-        if (!commentId) return this.handleError("PostId undefined", res);
+        if (!commentId) return this.handleError("CommentId undefined", res);
         if (isNaN(+commentId))
             return this.handleError("PostId no es un número", res);
         this.service.toggleLikeComment(user.id, +commentId)
+            .then((r) => res.status(201).json(r))
+            .catch((e) => this.handleError(e, res))
+    }
+
+    toggleFollowUser = async (req: Request, res: Response) => {
+        const user = (req as any).user;
+        const otherUserId = req.params.userId;
+
+        if (!otherUserId) return this.handleError("CommentId undefined", res);
+        if (isNaN(+otherUserId))
+            return this.handleError("PostId no es un número", res);
+
+        this.service.toggleFollowUser(+user.id, +otherUserId)
             .then((r) => res.status(201).json(r))
             .catch((e) => this.handleError(e, res))
     }

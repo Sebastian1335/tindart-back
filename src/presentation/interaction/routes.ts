@@ -19,6 +19,7 @@ export class InteractionRoutes {
     router.post('/save/post/:postId', [AuthMiddleware.validateJWT], interactionController.toggleSavePost);
     router.post('/share/post/:postId', [AuthMiddleware.validateJWT], interactionController.toggleSharePost);
     router.post('/like/comment/:commentId', [AuthMiddleware.validateJWT], interactionController.toggleLikeComment);
+    router.post('/follow/:userId', [AuthMiddleware.validateJWT], interactionController.toggleFollowUser);
     return router;
   }
 }

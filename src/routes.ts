@@ -3,6 +3,7 @@ import { AuthRoutes } from "./presentation/auth/routes";
 import { PostRoutes } from "./presentation/post/routes";
 import { InteractionRoutes } from './presentation/interaction/routes';
 import { WhiteboardRoutes } from "./presentation/whiteboard/routes";
+import { ProfileRoutes } from "./presentation/profile/routes";
 
 
 export class AppRoutes {
@@ -16,6 +17,7 @@ export class AppRoutes {
         router.use(`${apiPrefix}/feed`, PostRoutes.routes)
         router.use(`${apiPrefix}/interaction`, InteractionRoutes.routes)
         router.use(`${apiPrefix}/whiteboard`, WhiteboardRoutes.routes)
+        router.use(`${apiPrefix}/profile`, ProfileRoutes.routes)
         return router;
     }
 }
