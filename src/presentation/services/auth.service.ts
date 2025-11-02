@@ -39,24 +39,7 @@ export class AuthService {
 
     public async loginUser(loginUser: LoginUserDto) {
         //FindONe para verificar si existe
-        const user = await prisma.user.findUnique({
-            where: {email: loginUser.email},
-            select: {
-                id: true,
-                password: true,
-                userName: true,
-                email: true,
-                createdAt: true,
-                description: true,
-                _count: {
-                    select: {
-                        followers: true,
-                        following: true,
-                        LikePost: true
-                    }
-                }
-            }
-        })
+        const user = await prisma.user.findUnique({where: {email: loginUser.email}})
         if (!user) throw CustomError.badRequest('Usuario no resgistrado')
         // if (user.emailValidated === false) throw CustomError.unauthrized('Email no validado')
         const isMatch = bcryptAdapter.compare(loginUser.password!, user.password)
@@ -67,11 +50,9 @@ export class AuthService {
 
         const token = await JwtAdapter.generateToken({id: user.id})
         if (!token) throw CustomError.internalServer('Error while creating jwt')
+        
         return{
-            user: {
-                extra: {description: user.description, ...user._count},
-                ...info
-            },
+            user: info,
             token: token
         }
     }

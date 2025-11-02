@@ -84,4 +84,17 @@ export class ProfileController {
             this.handleError(error, res);
         }
     }
+
+    getProfileInfo = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+            if (typeof id === "undefined") return this.handleError("id es undefined", res);
+            if (isNaN(+id))  return this.handleError("id debe ser un numero", res);
+            this.service.getProfileInfo(+id)
+                .then((r) => res.json(r))
+                .catch((e) => this.handleError(e, res))
+        } catch (error) {
+            this.handleError(error, res);
+        }
+    }
 }

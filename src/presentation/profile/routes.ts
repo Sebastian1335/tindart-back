@@ -15,6 +15,7 @@ export class ProfileRoutes {
     router.get('/portafolio', [AuthMiddleware.validateJWT], controller.getPortafolio)
     router.get('/likedPosts', [AuthMiddleware.validateJWT], controller.getLikedPost)
     router.get('/savedPosts', [AuthMiddleware.validateJWT], controller.getSavedPost)
+    router.get('/profileData/:id', [AuthMiddleware.validateJWT], controller.getProfileInfo)
     return router;
   }
 

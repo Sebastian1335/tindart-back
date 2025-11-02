@@ -1,32 +1,10 @@
 import { prisma } from "../../data/postgres";
 import { PostEntity } from "../../domain/entities/post.entity";
+import { UserEntity } from "../../domain/entities/user.entitys";
+import { CustomError } from "../../domain/errors/custom.error";
 
 export class ProfileService {
     constructor() {}
-
-    public getProfileData = async (userId: number) => {
-        const response = await prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
-            select: {
-                createdAt: true,
-                userName: true,
-                profilePictures: {
-                    select: {
-                        profilePicture: true,
-                        wallPicture: true,
-                    },
-                },
-                _count: {
-                    select: {
-                        followers: true,
-                        following: true,
-                    },
-                },
-            },
-        });
-    };
 
     public getProfilePicture = async (userId: number) => {
         const response = await prisma.user.findUnique({
@@ -160,4 +138,55 @@ export class ProfileService {
 
         return { posts, total };
     };
+
+    public async getProfileInfo(userId: number) {
+        //FindONe para verificar si existe
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                password: true,
+                userName: true,
+                email: true,
+                createdAt: true,
+                description: true,
+                _count: {
+                    select: {
+                        followers: true,
+                        following: true,
+                    },
+                },
+                post: {
+                    select: {
+                        _count: {
+                            select: {
+                                LikePost: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        let totalLikesReceived = null;
+        if (user!.post !== null){
+            totalLikesReceived = user!.post.reduce(
+                (acc, post) => acc + post._count.LikePost,
+                0
+            );
+        }
+
+        if (!user) throw CustomError.badRequest("Usuario no resgistrado");
+        // if (user.emailValidated === false) throw CustomError.unauthrized('Email no validado')
+        // isMatch... bcript.compare(123123,asdsfawferwrfwr123)
+        const { password, post, ...info } = UserEntity.fromObject(user);
+
+        return {
+            extra: {
+                description: user.description,
+                ...user._count,
+                totalLikesReceived: totalLikesReceived ?? 0,
+            },
+            ...info,
+        };
+    }
 }
