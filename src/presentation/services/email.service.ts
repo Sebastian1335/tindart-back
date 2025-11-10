@@ -47,6 +47,11 @@ export class EmailService {
         attachments: attachements,
       });
 
+<<<<<<< HEAD
+=======
+      console.log( sentInformation );
+
+>>>>>>> ae2ea4d (email prod debug)
       return true;
     } catch ( error ) {
       console.log(error);
