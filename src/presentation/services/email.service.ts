@@ -36,19 +36,15 @@ export class EmailService {
   async sendEmail( options: SendMailOptions ): Promise<boolean> {
 
     const { to, subject, htmlBody, attachements = [] } = options;
-    console.log("inicio sendEmail");
 
     try {
       if (!this.postToProvider) return true
-      console.log("inicio sendEmail");
       const sentInformation = await this.transporter.sendMail( {
         to: to,
         subject: subject,
         html: htmlBody,
         attachments: attachements,
       });
-      console.log("Email enviado");
-      console.log( sentInformation );
 
       return true;
     } catch ( error ) {
