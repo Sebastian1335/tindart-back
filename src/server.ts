@@ -21,7 +21,7 @@ export class Server{
     async start() {
         this.app.use(
             cors({
-                origin: "http://localhost:5173", // tu frontend
+                origin: "https://tindart-front.netlify.app", // tu frontend
                 credentials: true, // si usas cookies o autenticación
             })
         )
