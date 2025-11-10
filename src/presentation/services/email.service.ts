@@ -39,6 +39,7 @@ export class EmailService {
 
     try {
       if (!this.postToProvider) return true
+      console.log("inicio sendEmail");
       const sentInformation = await this.transporter.sendMail( {
         to: to,
         subject: subject,
