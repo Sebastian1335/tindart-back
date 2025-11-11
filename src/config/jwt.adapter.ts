@@ -3,7 +3,7 @@ import { envs } from './envs'
 
 
 const JWT_SEED = envs.JWT_SEED
-
+const REFRESH_SEED = envs.REFRESH_SEED
 
 export class JwtAdapter {
     static async generateToken(payload: any, duration: any = '2h'){
@@ -14,10 +14,27 @@ export class JwtAdapter {
             })
         })
     }
+    static async generateRefreshToken(payload: any, duration: any = '7d'){
+        return new Promise((resolve) => {
+            jwt.sign(payload, REFRESH_SEED, {expiresIn: duration!}, (err, token) => {
+                if (err) return resolve(null)
+                resolve(token)
+            })
+        })
+    }
 
     static validateToken<T>(token: string): Promise<T | null> {
         return new Promise((resolve) => {
             jwt.verify(token, JWT_SEED, (err, decoded) => {
+                if (err) return resolve(null);
+                resolve(decoded as T)
+            })
+        })
+
+    }
+    static validateRefreshToken<T>(token: string): Promise<T | null> {
+        return new Promise((resolve) => {
+            jwt.verify(token, REFRESH_SEED, (err, decoded) => {
                 if (err) return resolve(null);
                 resolve(decoded as T)
             })

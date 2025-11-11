@@ -26,11 +26,12 @@ export class AuthService {
             // generar un JWT para mantener la autenticacion del usuario
             const token = await JwtAdapter.generateToken({id: user.id})
             if (!token) throw CustomError.internalServer('Error while creating jwt')
-
+            const refresh = await JwtAdapter.generateRefreshToken({id: user.id})
+            if (!token) throw CustomError.internalServer('Error while creating jwt');
             // Email de confirmacion
             this.sendEmailValidation(user.email)
             const {password, ...userEntity} = UserEntity.fromObject(user)
-            return {user: userEntity, token: token}
+            return {user: userEntity, token: token, refresh}
 
         } catch (error) {
             throw CustomError.internalServer(`${error}`)
@@ -50,10 +51,12 @@ export class AuthService {
 
         const token = await JwtAdapter.generateToken({id: user.id})
         if (!token) throw CustomError.internalServer('Error while creating jwt')
-        
+        const refresh = await JwtAdapter.generateRefreshToken({id: user.id});
+        if (!token) throw CustomError.internalServer('Error while creating jwt');
         return{
             user: info,
-            token: token
+            token: token,
+            refresh
         }
     }
 
@@ -99,5 +102,18 @@ export class AuthService {
         })
 
         return true
+    }
+
+    refreshToken = async(refreshToken: string) => {
+        const payload = await JwtAdapter.validateRefreshToken<{id: string}>(refreshToken)
+        if (!payload) throw CustomError.unauthrized('Error in refresh payload');
+        
+        const token = await JwtAdapter.generateToken({id: payload.id})
+        if (!token) throw CustomError.internalServer('Error while creating jwt');
+
+        const refresh = await JwtAdapter.generateRefreshToken({id: payload.id})
+        if (!token) throw CustomError.internalServer('Error while creating jwt');
+
+        return {token: token, refresh}
     }
 }

@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.service";
 import { LoginUserDto } from "../../domain/dto/auth/login-user.dto";
 import { RegisterUserDto } from "../../domain/dto/auth/register-user.dto";
 import { CustomError } from "../../domain/errors/custom.error";
+import { error } from "console";
 
 export class AuthController {
     constructor(
@@ -44,4 +45,12 @@ export class AuthController {
             .catch(error => this.handleError(error, res))
     }
 
+    refreshToken = (req: Request, res: Response) => {
+        const {refreshToken} = req.body
+        if (!refreshToken) return res.sendStatus(401).json("Sin propiedad refreshToken");
+        
+        this.authService.refreshToken(refreshToken)
+            .then((r) => res.json(r))
+            .catch(error => this.handleError(error, res))
+    }
 }
