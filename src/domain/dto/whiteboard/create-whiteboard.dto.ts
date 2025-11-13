@@ -15,7 +15,7 @@ export class CreateWhiteboardDto {
     if (!title || typeof title !== "string")
       return ["Título faltante o inválido", undefined];
 
-    if (!description && typeof description !== "string")
+    if (!description || typeof description !== "string")
       return ["Descripción faltante o inválida", undefined];
 
     if (snapshot && typeof snapshot !== "object")

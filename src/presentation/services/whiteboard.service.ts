@@ -24,7 +24,7 @@ export class WhiteboardService {
             return response;
         } catch (error) {
             throw CustomError.internalServer(
-                "Error al traer los whiteboards del usuario"
+                "Error al traer los whiteboards del usuario: " + error
             );
         }
     }
