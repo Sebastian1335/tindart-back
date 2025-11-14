@@ -7,7 +7,8 @@ const chatService = new ChatService();
 
 export const registerChatHandlers = () => {
     io.on("connection", async (socket) => {
-        const userId = Number(socket.handshake.query.userId);
+        const user = (socket as any).user;
+        const userId = user.id;
         if (!userId) return;
 
         socket.join(`user_${userId}`);
