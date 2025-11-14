@@ -4,6 +4,7 @@ import { PostRoutes } from "./presentation/post/routes";
 import { InteractionRoutes } from './presentation/interaction/routes';
 import { WhiteboardRoutes } from "./presentation/whiteboard/routes";
 import { ProfileRoutes } from "./presentation/profile/routes";
+import { ChatRoutes } from "./presentation/chat/router";
 
 
 export class AppRoutes {
@@ -18,6 +19,7 @@ export class AppRoutes {
         router.use(`${apiPrefix}/interaction`, InteractionRoutes.routes)
         router.use(`${apiPrefix}/whiteboard`, WhiteboardRoutes.routes)
         router.use(`${apiPrefix}/profile`, ProfileRoutes.routes)
+        router.use(`${apiPrefix}/chat`, ChatRoutes.routes)
         return router;
     }
 }

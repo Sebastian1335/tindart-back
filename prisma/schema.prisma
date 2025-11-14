@@ -33,6 +33,50 @@ model User {
   SharePost       SharePost[]
 
   WhiteBoard WhiteBoard[]
+
+  
+
+  conversationsOne Conversation[] @relation("UserOne")
+  conversationsTwo Conversation[] @relation("UserTwo")
+
+  messages Message[]
+}
+
+model Conversation {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userOneId Int
+  userTwoId Int
+  userOne User @relation("UserOne",fields: [userOneId], references: [id])
+  userTwo User @relation("UserTwo",fields: [userTwoId], references: [id])
+
+  messages Message[]
+
+  @@unique([userOneId, userTwoId])
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  text String?
+  createdAt DateTime @default(now())
+  status MessagesStatus @default(PENDING)
+
+  fromId Int
+  from User @relation(fields: [fromId], references: [id])
+
+  conversationId Int
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  postId Int?
+  post  Post? @relation("PostMessages", fields: [postId], references: [id])
+}
+
+enum MessagesStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
 }
 
 model profilePictures {
@@ -71,6 +115,8 @@ model Post {
   LikePost  LikePost[]
   SavePost  SavePost[]
   SharePost SharePost[]
+
+  messages Message[] @relation("PostMessages")
 }
 
 model LikePost {

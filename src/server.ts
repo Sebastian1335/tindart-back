@@ -1,7 +1,8 @@
 import express, { Router } from 'express'
 import fileUpload from 'express-fileupload'  
 import cors from "cors"
-
+import http from "http"
+import { corsLink } from './config/cors.config'
 interface Options {
     port: number,
     routes: Router
@@ -10,6 +11,7 @@ interface Options {
 
 export class Server{
     private app = express()
+    private httpServer?: http.Server
     private serverListener?: any;
     private readonly port: number
     private readonly routes: Router
@@ -21,7 +23,7 @@ export class Server{
     async start() {
         this.app.use(
             cors({
-                origin: "http://localhost:5173", // tu frontend
+                origin: corsLink, // tu frontend
                 credentials: true, // si usas cookies o autenticación
             })
         )
@@ -34,9 +36,13 @@ export class Server{
         //* Routes
         this.app.use(this.routes)
 
+        this.httpServer = http.createServer(this.app)
 
-        this.serverListener = this.app.listen(this.port, () => {
+        this.httpServer.listen(this.port, () => {
             console.log(`Server running on ${this.port}`);
         })
+    }
+    get server(){
+        return this.httpServer
     }
 }
