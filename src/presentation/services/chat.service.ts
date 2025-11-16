@@ -24,6 +24,60 @@ export class ChatService {
         return conv
     }
 
+    async getUserContacts(userId: number){
+        const contacts = await prisma.follows.findMany({
+            where: { 
+                idSeguidor: userId,
+                Seguido: {
+                    following: {
+                        some: {
+                            idSeguido: userId
+                        }
+                    }
+                }
+            },
+            select: {
+                Seguido: {
+                    select: {
+                        id: true,
+                        userName: true,
+                        conversationsOne: {
+                            where: { userTwoId: userId },
+                            select: {
+                                messages: {
+                                    orderBy: { createdAt: 'desc' },
+                                    take: 1,
+                                    select: { text: true, createdAt: true }
+                                }
+                            }
+                        },
+                        conversationsTwo: {
+                            where: {userOneId: userId},
+                            select: {
+                                messages: {
+                                    orderBy: {createdAt: "desc"},
+                                    take: 1,
+                                    select: {text: true, createdAt: true}
+                                }
+                            }
+                        }
+                    },
+                },
+            },
+        })
+        const res = contacts.map(c => {
+            const u = c.Seguido;
+            const conv = u.conversationsOne[0] || u.conversationsTwo[0];
+            return {
+                    id: u.id,
+                    userName: u.userName,
+                    lastMessage: conv?.messages[0] || null
+                };
+        });
+
+        return res
+    }
+
     async saveMessage(dto: CreateMessageDto){
         const conversation = await prisma.conversation.findUnique({
             where: {id: dto.conversationId}
@@ -53,6 +107,9 @@ export class ChatService {
             },
             include: {
                 messages: {
+                    where: {
+                        
+                    },
                     take: 1,
                     orderBy: {createdAt: "desc"}
                 },
@@ -61,7 +118,7 @@ export class ChatService {
             },
             orderBy: {
                 messages: {
-                    _count: "desc"
+                    _count: 'desc'
                 }
             }
         })
@@ -71,7 +128,7 @@ export class ChatService {
     async getMessages(conversationId: number, limit =  50, offset= 0){
         const res = await prisma.message.findMany({
             where: {conversationId},
-            orderBy: {createdAt: "desc"},
+            orderBy: {createdAt: "asc"},
             skip: offset,
             take: limit
         })

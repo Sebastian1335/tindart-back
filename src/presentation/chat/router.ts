@@ -13,10 +13,12 @@ export class ChatRoutes {
   static get routes(): Router {
     const router = Router();
     const service = new ChatService()
-    const interactionController = new ChatController(service)
+    const controller = new ChatController(service)
     // Definir las rutas
-    router.get('/conversation/:userId', [AuthMiddleware.validateJWT], interactionController.getConversationPerUser)
-    router.get("/messages/:conversationId", [AuthMiddleware.validateJWT], interactionController.getMessages)
+    router.get('/conversations', [AuthMiddleware.validateJWT], controller.getConversationPerUser)
+    router.post('/conversation/:userId', [AuthMiddleware.validateJWT], controller.createConversation)
+    router.get("/messages/:conversationId", [AuthMiddleware.validateJWT], controller.getMessages)
+    router.get(`/contacts`, [AuthMiddleware.validateJWT], controller.getContacts)
     return router;
   }
 

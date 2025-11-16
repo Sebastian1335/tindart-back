@@ -45,6 +45,7 @@ model User {
 model Conversation {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 
   userOneId Int
   userTwoId Int

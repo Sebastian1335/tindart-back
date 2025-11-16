@@ -71,11 +71,20 @@ export class PostService {
                 author: {
                     select: {
                         userName: true,
+                        id: true,
                         _count: {
                             select: {
                                 followers: true
                             }
                         },
+                        followers: {
+                            where: {
+                                idSeguidor: userId
+                            },
+                            select: {
+                                id: true
+                            }
+                        }
                     }
                 },
                 comments: {
@@ -88,7 +97,7 @@ export class PostService {
                         authorId: true,
                         author: {
                             select: {
-                                userName: true
+                                userName: true,
                             }
                         },
                         _count: {
@@ -137,7 +146,7 @@ export class PostService {
             count: post._count
         }
 
-        return {user: post.author, comments: comments, postDetails}
+        return {user: post.author, comments: comments, postDetails, }
     }
 
     public createComment = async (dto: CreateCommentDto): Promise<CommentEntity> => {

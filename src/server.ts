@@ -3,6 +3,8 @@ import fileUpload from 'express-fileupload'
 import cors from "cors"
 import http from "http"
 import { corsLink } from './config/cors.config'
+
+
 interface Options {
     port: number,
     routes: Router
@@ -23,8 +25,8 @@ export class Server{
     async start() {
         this.app.use(
             cors({
-                origin: corsLink, // tu frontend
-                credentials: true, // si usas cookies o autenticación
+                origin: corsLink,
+                credentials: true,
             })
         )
         //* Middlewares
