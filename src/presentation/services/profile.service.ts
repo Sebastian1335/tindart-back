@@ -139,7 +139,7 @@ export class ProfileService {
         return { posts, total };
     };
 
-    public async getProfileInfo(userId: number) {
+    public async getProfileInfo(userId: number, id: number) {
         //FindONe para verificar si existe
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -155,6 +155,14 @@ export class ProfileService {
                         followers: true,
                         following: true,
                     },
+                },
+                followers: {
+                    where: {
+                        idSeguidor: id
+                    },
+                    select: {
+                        id: true
+                    }
                 },
                 post: {
                     select: {

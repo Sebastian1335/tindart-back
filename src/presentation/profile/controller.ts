@@ -42,7 +42,9 @@ export class ProfileController {
     }
     getLikedPost = async (req: Request, res: Response) => {
         try {
-            const user = (req as any).user;
+            const userId = req.params.userId
+            if (userId === undefined) return this.handleError("userId no esta definido", res)
+            if (isNaN(+userId)) return this.handleError("userId invalido", res)
             const page = parseInt(
                 typeof req.query.page === "string" ? req.query.page : "1"
             );
@@ -50,7 +52,7 @@ export class ProfileController {
                 typeof req.query.limit === "string" ? req.query.limit : "20"
             );
 
-            const response = await this.service.getLikedPosts(limit, page, user.id);
+            const response = await this.service.getLikedPosts(limit, page, +userId);
 
             res.status(200).json({
                 data: response.posts,
@@ -65,7 +67,9 @@ export class ProfileController {
     }
     getSavedPost = async (req: Request, res: Response) => {
         try {
-            const user = (req as any).user;
+            const userId = req.params.userId
+            if (userId === undefined) return this.handleError("userId no esta definido", res)
+            if (isNaN(+userId)) return this.handleError("userId invalido", res)
             const page = parseInt(
                 typeof req.query.page === "string" ? req.query.page : "1"
             );
@@ -73,7 +77,7 @@ export class ProfileController {
                 typeof req.query.limit === "string" ? req.query.limit : "20"
             );
 
-            const response = await this.service.getSavedPosts(limit, page, user.id);
+            const response = await this.service.getSavedPosts(limit, page, +userId);
 
             res.status(200).json({
                 data: response.posts,
@@ -90,9 +94,10 @@ export class ProfileController {
     getProfileInfo = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
+            const user = (req as any).user
             if (typeof id === "undefined") return this.handleError("id es undefined", res);
             if (isNaN(+id))  return this.handleError("id debe ser un numero", res);
-            this.service.getProfileInfo(+id)
+            this.service.getProfileInfo(+id, +user.id)
                 .then((r) => res.json(r))
                 .catch((e) => this.handleError(e, res))
         } catch (error) {
