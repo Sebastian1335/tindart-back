@@ -1,1 +1,3 @@
-export const corsLink = "https://tindart-front.netlify.app"
+import { envs } from "./envs";
+
+export const corsLink = envs.CORS_LINK
