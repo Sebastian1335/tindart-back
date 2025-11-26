@@ -1,1 +1,1 @@
-export const corsLink = "*"
+export const corsLink = "https://tindart-front.netlify.app"
