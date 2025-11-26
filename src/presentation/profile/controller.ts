@@ -17,7 +17,9 @@ export class ProfileController {
 
     getPortafolio = async (req: Request, res: Response) => {
         try {
-            const user = (req as any).user;
+            const userId = req.params.userId
+            if (userId === undefined) return this.handleError("userId no esta definido", res)
+            if (isNaN(+userId)) return this.handleError("userId invalido", res)
             const page = parseInt(
                 typeof req.query.page === "string" ? req.query.page : "1"
             );
@@ -25,7 +27,7 @@ export class ProfileController {
                 typeof req.query.limit === "string" ? req.query.limit : "20"
             );
 
-            const response = await this.service.getPortafolio(limit, page, user.id);
+            const response = await this.service.getPortafolio(limit, page, +userId);
 
             res.status(200).json({
                 data: response.posts,
